@@ -18,11 +18,21 @@
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            background-image: url('https://xpeterpp.github.io/PPBadminton.github.io/Back.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            /* 改良後的背景設定 */
+            background: #2a6f6f; /* 回退背景色 */
+            background: 
+                linear-gradient(rgba(42, 111, 111, 0.85), rgba(42, 111, 111, 0.85)),
+                url('https://xpeterpp.github.io/PPBadminton.github.io/Back.jpg') center/cover no-repeat;
+            background-attachment: fixed;
             color: #333;
+        }
+
+        /* 針對移動設備優化背景 */
+        @media (max-width: 768px) {
+            body {
+                background-size: 150% auto;
+                background-position: top center;
+            }
         }
 
         /* 卡片容器 (玻璃質感) */
