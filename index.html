@@ -20,16 +20,40 @@
             text-align: center;
             /* 改良後的背景設定 */
             background: #2a6f6f; /* 回退背景色 */
-            background: 
-                linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)),
-                url('https://xpeterpp.github.io/PPBadminton.github.io/Back.jpg') center/cover no-repeat;
-            background-attachment: fixed;
             color: #333;
+        }
+
+        /* 背景圖片容器 */
+        .background-slideshow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .background-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .background-slide.active {
+            opacity: 1;
         }
 
         /* 針對移動設備優化背景 */
         @media (max-width: 768px) {
-            body {
+            .background-slide {
                 background-size: 335% auto;
                 background-position: center;
             }
@@ -213,6 +237,15 @@
     </style>
 </head>
 <body>
+    <!-- 背景圖片輪播 -->
+    <div class="background-slideshow">
+        <div class="background-slide active" style="background-image: linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)), url('https://xpeterpp.github.io/PPBadminton.github.io/Back1.jpg')"></div>
+        <div class="background-slide" style="background-image: linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)), url('https://xpeterpp.github.io/PPBadminton.github.io/Back2.jpg')"></div>
+        <div class="background-slide" style="background-image: linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)), url('https://xpeterpp.github.io/PPBadminton.github.io/Back3.jpg')"></div>
+        <div class="background-slide" style="background-image: linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)), url('https://xpeterpp.github.io/PPBadminton.github.io/Back4.jpg')"></div>
+        <div class="background-slide" style="background-image: linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)), url('https://xpeterpp.github.io/PPBadminton.github.io/Back5.jpg')"></div>
+    </div>
+
     <!-- 載入動畫層 -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
@@ -266,6 +299,26 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainContainer = document.getElementById('mainContainer');
         const lineLink = document.querySelector('.line-link');
+        
+        // 背景輪播功能
+        function initBackgroundSlideshow() {
+            const slides = document.querySelectorAll('.background-slide');
+            let currentSlide = 0;
+            
+            function showNextSlide() {
+                // 隱藏當前幻燈片
+                slides[currentSlide].classList.remove('active');
+                
+                // 計算下一張幻燈片索引
+                currentSlide = (currentSlide + 1) % slides.length;
+                
+                // 顯示下一張幻燈片
+                slides[currentSlide].classList.add('active');
+            }
+            
+            // 每5秒切換一次背景
+            setInterval(showNextSlide, 5000);
+        }
 
         // 處理按鈕點擊事件
         function handleButtonClick(event, url) {
@@ -298,6 +351,9 @@
         guideBtn.addEventListener('click', (e) => {
             handleButtonClick(e, guideBtn.href);
         });
+        
+        // 初始化背景輪播
+        window.addEventListener('DOMContentLoaded', initBackgroundSlideshow);
     </script>
 </body>
 </html>
