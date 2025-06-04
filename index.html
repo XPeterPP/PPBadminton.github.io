@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PP羽球穿線</title>
+    <!-- 新增 favicon 設定 -->
     <link rel="icon" type="image/png" href="https://xpeterpp.github.io/PPBadminton.github.io/PP_logo.png">
     <style>
+        /* [保持所有CSS樣式不變，與之前相同] */
         /* 全局樣式 */
         body {
             font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
@@ -17,7 +19,8 @@
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            background: #2a6f6f;
+            /* 改良後的背景設定 */
+            background: #2a6f6f; /* 回退背景色 */
             color: #333;
         }
 
@@ -161,36 +164,22 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
-        /* 外部連結容器 */
-        .external-links {
+        /* 底部連結容器 */
+        .bottom-links {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 450px;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        /* 連結樣式 */
-        .external-link {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 16px;
-            border-radius: 20px;
+        /* 連結按鈕樣式 */
+        .social-link {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 15px;
             font-size: 14px;
             text-decoration: none;
             transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background-color: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(5px);
-        }
-
-        .external-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            color: white;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         /* LINE連結樣式 */
@@ -200,7 +189,13 @@
         }
 
         .line-link:hover {
+            color: white;
             background-color: rgba(6, 199, 85, 0.3);
+            text-decoration: underline;
+        }
+
+        .line-link::before {
+            content: "💬 ";
         }
 
         /* Threads連結樣式 */
@@ -210,13 +205,13 @@
         }
 
         .threads-link:hover {
+            color: white;
             background-color: rgba(0, 0, 0, 0.3);
+            text-decoration: underline;
         }
 
-        /* 連結圖標 */
-        .link-icon {
-            margin-right: 8px;
-            font-size: 16px;
+        .threads-link::before {
+            content: "🧵 ";
         }
 
         /* 載入動畫 */
@@ -262,13 +257,12 @@
             .description-text {
                 font-size: 14px;
             }
-            .external-links {
+            .social-link {
+                font-size: 13px;
+            }
+            .bottom-links {
                 flex-direction: column;
                 align-items: center;
-            }
-            .external-link {
-                width: 80%;
-                justify-content: center;
             }
         }
     </style>
@@ -276,7 +270,8 @@
 <body>
     <!-- 背景圖片輪播 -->
     <div class="background-slideshow">
-        <div class="background-slide active" id="day-background"></div>
+        <!-- 只保留一個背景div，通過JS動態修改圖片 -->
+        <div class="background-slide active" id="day-background" style="background-image: linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)), url('https://xpeterpp.github.io/PPBadminton.github.io/Back1.jpg')"></div>
     </div>
 
     <!-- 載入動畫層 -->
@@ -318,19 +313,19 @@
         </div>
     </div>
 
-    <!-- 外部連結容器 -->
-    <div class="external-links">
+    <!-- 底部連結容器 -->
+    <div class="bottom-links">
+        <!-- LINE連結 -->
         <a href="https://line.me/ti/p/kuurTdUm7Z" 
-           class="external-link line-link"
+           class="social-link line-link"
            target="_blank">
-            <span class="link-icon">📱</span>
             透過LINE聯絡
         </a>
         
+        <!-- Threads作品集連結 -->
         <a href="https://www.threads.com/@p.p0728?hl=zh-tw" 
-           class="external-link threads-link"
+           class="social-link threads-link"
            target="_blank">
-            <span class="link-icon">🏸</span>
             Threads作品集
         </a>
     </div>
@@ -341,34 +336,36 @@
         const guideBtn = document.getElementById('guideBtn');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainContainer = document.getElementById('mainContainer');
-        const externalLinks = document.querySelector('.external-links');
+        const bottomLinks = document.querySelector('.bottom-links');
         const dayBackground = document.getElementById('day-background');
         
-        // 背景圖片陣列
-        const backgroundImages = [
-            'https://xpeterpp.github.io/PPBadminton.github.io/Back1.jpg',
-            'https://xpeterpp.github.io/PPBadminton.github.io/Back2.jpg',
-            'https://xpeterpp.github.io/PPBadminton.github.io/Back3.jpg',
-            'https://xpeterpp.github.io/PPBadminton.github.io/Back4.jpg',
-            'https://xpeterpp.github.io/PPBadminton.github.io/Back5.jpg',
-            'https://xpeterpp.github.io/PPBadminton.github.io/Back6.jpg',
-            'https://xpeterpp.github.io/PPBadminton.github.io/Back7.jpg'
-        ];
-        
-        // 設置背景圖片
-        function setRandomBackground() {
-            const randomIndex = Math.floor(Math.random() * backgroundImages.length);
-            const imageUrl = backgroundImages[randomIndex];
-            dayBackground.style.backgroundImage = `linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)), url('${imageUrl}')`;
+        // 根據星期幾顯示對應背景圖片
+        function showDayBackground() {
+            // 定義星期對應的圖片
+            const dayImages = [
+                'Back7.jpg', // 0: 週日
+                'Back1.jpg', // 1: 週一
+                'Back2.jpg', // 2: 週二
+                'Back3.jpg', // 3: 週三
+                'Back4.jpg', // 4: 週四
+                'Back5.jpg', // 5: 週五
+                'Back6.jpg'  // 6: 週六
+            ];
+            
+            const today = new Date().getDay(); // 0是星期日，1是星期一，依此類推
+            const imageName = dayImages[today];
+            
+            // 設置背景圖片
+            dayBackground.style.backgroundImage = `linear-gradient(rgba(42, 111, 111, 0.0), rgba(0, 0, 0, 0.75)), url('https://xpeterpp.github.io/PPBadminton.github.io/${imageName}')`;
         }
-        
+
         // 處理按鈕點擊事件
         function handleButtonClick(event, url) {
             event.preventDefault(); // 阻止默認跳轉行為
             
-            // 隱藏卡片內容和外部連結
+            // 隱藏卡片內容和底部連結
             mainContainer.style.opacity = '0';
-            externalLinks.style.opacity = '0';
+            bottomLinks.style.opacity = '0';
             
             // 顯示載入動畫
             loadingOverlay.style.display = 'flex';
@@ -376,9 +373,9 @@
             // 等待300毫秒讓淡出動畫完成後再隱藏元素
             setTimeout(() => {
                 mainContainer.style.display = 'none';
-                externalLinks.style.display = 'none';
+                bottomLinks.style.display = 'none';
                 
-                // 2.5秒後跳轉
+                // 4秒後跳轉
                 setTimeout(() => {
                     window.location.href = url;
                 }, 2500);
@@ -395,12 +392,7 @@
         });
         
         // 初始化背景顯示
-        window.addEventListener('DOMContentLoaded', () => {
-            setRandomBackground();
-            
-            // 每10秒更換一次背景
-            setInterval(setRandomBackground, 10000);
-        });
+        window.addEventListener('DOMContentLoaded', showDayBackground);
     </script>
 </body>
 </html>
