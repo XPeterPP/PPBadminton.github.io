@@ -241,6 +241,30 @@
             to { transform: rotate(360deg); }
         }
 
+        /* 暫停服務訊息 */
+        .pause-message {
+            display: none;
+            padding: 20px;
+            background-color: rgba(255, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid rgba(255, 0, 0, 0.5);
+            margin-top: 20px;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 狀態載入指示器 */
+        .status-loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 5px;
+        }
+
         /* 響應式調整 */
         @media (max-width: 480px) {
             .container {
@@ -286,7 +310,7 @@
              alt="PP羽球穿線 Logo">
 
         <!-- 雙按鈕容器 -->
-        <div class="button-container">
+        <div class="button-container" id="serviceButtons">
             <a href="https://script.google.com/macros/s/AKfycby4G9eEUbvKNZXSzXS7cAs5LAtKX48mLLYbdRaPb9YD7KYaHF_YvMvpn2_bdmmuoNtTnA/exec" 
                class="btn btn-primary"
                id="priceBtn">
@@ -304,11 +328,20 @@
         </div>
 
         <!-- 說明文字區 -->
-        <div class="description">
+        <div class="description" id="normalDescription">
             <p class="description-text">
                 穿線服務是下班後的樂趣，小本經營<br>
                 每支球拍都用心對待，追求完美張力<br>
                 服務區域：新竹竹北地區
+            </p>
+        </div>
+
+        <!-- 暫停服務訊息 -->
+        <div class="pause-message" id="pauseMessage">
+            <p class="description-text">
+                ⚠️ 目前暫停服務中 ⚠️<br>
+                暫時無法提供穿線服務<br>
+                仍可透過LINE聯繫或查看作品集
             </p>
         </div>
     </div>
@@ -338,6 +371,44 @@
         const mainContainer = document.getElementById('mainContainer');
         const bottomLinks = document.querySelector('.bottom-links');
         const dayBackground = document.getElementById('day-background');
+        const serviceButtons = document.getElementById('serviceButtons');
+        const normalDescription = document.getElementById('normalDescription');
+        const pauseMessage = document.getElementById('pauseMessage');
+        
+        // 從 GitHub 讀取服務狀態
+        async function fetchServiceStatus() {
+            try {
+                // 使用 GitHub Raw URL 讀取 state.txt
+                const response = await fetch('https://raw.githubusercontent.com/XPeterPP/PPBadminton.github.io/main/state.txt?t=' + new Date().getTime());
+                
+                if (!response.ok) {
+                    throw new Error('無法讀取服務狀態');
+                }
+                
+                const stateText = await response.text();
+                const isServicePaused = stateText.trim().toLowerCase() === 'paused';
+                
+                // 根據狀態更新 UI
+                toggleServiceStatus(isServicePaused);
+            } catch (error) {
+                console.error('讀取服務狀態失敗:', error);
+                // 預設顯示正常服務
+                toggleServiceStatus(false);
+            }
+        }
+        
+        // 切換服務狀態
+        function toggleServiceStatus(isPaused) {
+            if (isPaused) {
+                serviceButtons.style.display = 'none';
+                normalDescription.style.display = 'none';
+                pauseMessage.style.display = 'block';
+            } else {
+                serviceButtons.style.display = 'flex';
+                normalDescription.style.display = 'block';
+                pauseMessage.style.display = 'none';
+            }
+        }
         
         // 根據星期幾顯示對應背景圖片
         function showDayBackground() {
@@ -391,8 +462,14 @@
             handleButtonClick(e, guideBtn.href);
         });
         
-        // 初始化背景顯示
-        window.addEventListener('DOMContentLoaded', showDayBackground);
+        // 初始化背景顯示和服務狀態
+        window.addEventListener('DOMContentLoaded', () => {
+            showDayBackground();
+            fetchServiceStatus();
+            
+            // 每5分鐘檢查一次狀態更新
+            setInterval(fetchServiceStatus, 5 * 60 * 1000);
+        });
     </script>
 </body>
 </html>
