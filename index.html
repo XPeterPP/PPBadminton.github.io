@@ -173,6 +173,7 @@
             display: flex;
             gap: 10px;
             margin-top: 15px;
+            transition: opacity 0.3s ease;
         }
 
         .social-link {
@@ -416,6 +417,15 @@
             }, 300);
         }
 
+        // 恢復頁面狀態的函數
+        function restorePageState() {
+            mainContainer.style.display = '';
+            mainContainer.style.opacity = '1';
+            bottomLinks.style.display = '';
+            bottomLinks.style.opacity = '1';
+            loadingOverlay.style.display = 'none';
+        }
+
         // 綁定點擊事件
         priceBtn.addEventListener('click', (e) => {
             handleButtonClick(e, priceBtn.href);
@@ -430,6 +440,18 @@
             showDayBackground();
             fetchServiceStatus();
             setInterval(fetchServiceStatus, 5 * 60 * 1000);
+            
+            // 檢查是否是從其他頁面返回
+            if (performance.navigation.type === 2) {
+                restorePageState();
+            }
+        });
+
+        // 監聽頁面可見性變化
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                restorePageState();
+            }
         });
     </script>
 </body>
